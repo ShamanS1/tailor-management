@@ -1,20 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Center, Heading, Box, Button } from '@chakra-ui/react';
-import { SegmentedControl } from "../Components/ui/segmented-control";
-import { Card } from "@chakra-ui/react";
 import axios from 'axios';
-import { useUserContext } from '../UserContext'; 
-
-import {
-    DrawerBackdrop,
-    DrawerBody,
-    DrawerCloseTrigger,
-    DrawerContent,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerRoot,
-    DrawerTrigger,
-} from "../Components/ui/drawer";
+import { useUserContext } from '../UserContext';
 
 interface Order {
     _id: string;
@@ -25,6 +11,7 @@ interface Order {
     amount: number;
     dresses: string[];
     placedDate: string;
+    firebaseUidc?: string;
 }
 
 interface Dress {
@@ -39,15 +26,13 @@ interface Dress {
 }
 
 const OrdersTailor: React.FC = () => {
-
-    const { user, logout } = useUserContext();
+    const { user } = useUserContext();
     const [orders, setOrders] = useState<Order[]>([]);
     const [updatedOrders, setUpdatedOrders] = useState<Order[]>([]);
     const [hasChanges, setHasChanges] = useState<boolean>(false);
     const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [measurements, setMeasurements] = useState<Dress[]>([]);
-    const [cname, setCname] = useState("");
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -101,8 +86,6 @@ const OrdersTailor: React.FC = () => {
         try {
             const response = await axios.get(`http://localhost:5010/api/measurement/${order._id}`);
             setMeasurements(response.data[0].dressMeasures || []); 
-            console.log(measurements);
-
         } catch (error) {
             console.error("Error fetching measurements:", error);
             setMeasurements([]); // Reset on error
@@ -110,129 +93,176 @@ const OrdersTailor: React.FC = () => {
     };
 
     return (
-        <Center>
-            <Card.Root width="1000px">
-                <Center>
-                    <Heading size="lg">Orders to Complete</Heading>
-                </Center>
-                <Box p={4}>
-                    <Table.Root variant="outline" width="100%">
-                        <Table.Header>
-                            <Table.Row>
-                                <Table.ColumnHeader>Customer</Table.ColumnHeader>
-                                <Table.ColumnHeader>Deadline</Table.ColumnHeader>
-                                <Table.ColumnHeader>Dresses</Table.ColumnHeader>
-                                <Table.ColumnHeader>Details</Table.ColumnHeader>
-                                <Table.ColumnHeader>Order Status</Table.ColumnHeader>
-                            </Table.Row>
-                        </Table.Header>
-                        <Table.Body>
+        <div className="flex justify-center">
+            <div className="w-full max-w-5xl bg-white rounded-lg shadow-lg p-6">
+                <div className="text-center mb-6">
+                    <h2 className="text-2xl font-bold text-teal-700">Orders to Complete</h2>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                            <tr>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deadline</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dresses</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Status</th>
+                            </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
                             {updatedOrders.map((order) => (
-                                <Table.Row key={order._id}>
-                                    <Table.Cell>{order.firebaseUidc}</Table.Cell>
-                                    <Table.Cell>{new Date(order.deliveryDate).toLocaleDateString()}</Table.Cell>
-                                    <Table.Cell>
-                                        <ul>
+                                <tr key={order._id} className="hover:bg-gray-50">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order.firebaseUidc || order.customerId}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(order.deliveryDate).toLocaleDateString()}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-900">
+                                        <ul className="list-disc pl-5">
                                             {order.dresses.map((dress, index) => (
                                                 <li key={index}>{dress}</li>
                                             ))}
                                         </ul>
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                        <DrawerRoot isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} size="xl">
-                                            <DrawerTrigger asChild>
-                                                <Button size="sm" onClick={() => handleViewDetails(order)}>View Details</Button>
-                                            </DrawerTrigger>
-                                            <DrawerBackdrop />
-                                            <DrawerContent>
-                                                <DrawerCloseTrigger>
-                                                    <Button variant="outline">Close</Button>
-                                                </DrawerCloseTrigger>
-                                                <DrawerHeader>
-                                                    <DrawerTitle>Order Details</DrawerTitle>
-                                                </DrawerHeader>
-                                                <DrawerBody>
-                                                    {selectedOrder && (
-                                                        <Box>
-                                                            <p><strong>Customer ID:</strong> {selectedOrder.customerId}</p>
-                                                            <p><strong>Placed On:</strong> {new Date(selectedOrder.placedDate).toLocaleDateString()}</p>
-                                                            <p><strong>Delivery Date:</strong> {new Date(selectedOrder.deliveryDate).toLocaleDateString()}</p>
-                                                            <p><strong>Order Status:</strong> {selectedOrder.orderStatus}</p>
-                                                            <p><strong>Amount:</strong> ${selectedOrder.amount.toFixed(2)}</p>
-                                                            <p><strong>Dresses:</strong></p>
-                                                            <ul>
-                                                                {selectedOrder.dresses.map((dress, index) => (
-                                                                    <li key={index}>{dress}</li>
-                                                                ))}
-                                                            </ul>
-                                                            <p><strong>Placed Date:</strong> {new Date(selectedOrder.placedDate).toLocaleDateString()}</p>
-
-                                                            <p><strong>Measurements:</strong></p>
-                                                            <Table.Root size="sm">
-                                                                <Table.Header>
-                                                                    <Table.Row>
-                                                                        <Table.ColumnHeader>Name</Table.ColumnHeader>
-                                                                        <Table.ColumnHeader>Chest</Table.ColumnHeader>
-                                                                        <Table.ColumnHeader>Waist</Table.ColumnHeader>
-                                                                        <Table.ColumnHeader>Length</Table.ColumnHeader>
-                                                                        <Table.ColumnHeader>Sleeve</Table.ColumnHeader>
-                                                                        <Table.ColumnHeader>Inseam</Table.ColumnHeader>
-                                                                        <Table.ColumnHeader>Collar</Table.ColumnHeader>
-                                                                        <Table.ColumnHeader>Shoulder</Table.ColumnHeader>
-                                                                    </Table.Row>
-                                                                </Table.Header>
-                                                                <Table.Body>
-                                                                    {measurements.length > 0 ? ( // Check if measurements has data
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <button 
+                                            onClick={() => handleViewDetails(order)}
+                                            className="bg-teal-500 hover:bg-teal-600 text-white py-1 px-3 rounded text-sm transition-colors duration-200"
+                                        >
+                                            View Details
+                                        </button>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <div className="flex rounded-md shadow-sm">
+                                            {["Pending", "Accepted", "Completed", "Cancel"].map((status) => (
+                                                <button
+                                                    key={status}
+                                                    className={`px-3 py-1 text-sm font-medium ${
+                                                        order.orderStatus === status
+                                                            ? "bg-teal-500 text-white"
+                                                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                                    } ${
+                                                        status === "Pending" ? "rounded-l-md" : ""
+                                                    } ${
+                                                        status === "Cancel" ? "rounded-r-md" : ""
+                                                    } transition-colors duration-200`}
+                                                    onClick={() => handleStatusChange(order._id, status)}
+                                                >
+                                                    {status}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                
+                {hasChanges && (
+                    <div className="mt-6 flex justify-between">
+                        <button 
+                            onClick={cancelChanges}
+                            className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded transition-colors duration-200"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            onClick={saveChanges}
+                            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors duration-200"
+                        >
+                            Save Changes
+                        </button>
+                    </div>
+                )}
+                
+                {/* Drawer for Order Details */}
+                {isDrawerOpen && (
+                    <div className="fixed inset-0 overflow-hidden z-50">
+                        <div className="absolute inset-0 overflow-hidden">
+                            <div className="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={() => setIsDrawerOpen(false)}></div>
+                            <div className="fixed inset-y-0 right-0 max-w-full flex">
+                                <div className="relative w-screen max-w-2xl">
+                                    <div className="h-full flex flex-col bg-white shadow-xl overflow-y-scroll">
+                                        <div className="px-4 py-6 sm:px-6 border-b border-gray-200">
+                                            <div className="flex items-start justify-between">
+                                                <h2 className="text-lg font-medium text-gray-900">Order Details</h2>
+                                                <button 
+                                                    onClick={() => setIsDrawerOpen(false)}
+                                                    className="rounded-md text-gray-400 hover:text-gray-500 focus:outline-none"
+                                                >
+                                                    <span className="sr-only">Close</span>
+                                                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div className="flex-1 py-6 overflow-y-auto px-4 sm:px-6">
+                                            {selectedOrder && (
+                                                <div className="space-y-4">
+                                                    <p className="text-sm text-gray-700"><span className="font-medium">Customer ID:</span> {selectedOrder.customerId}</p>
+                                                    <p className="text-sm text-gray-700"><span className="font-medium">Placed On:</span> {new Date(selectedOrder.placedDate).toLocaleDateString()}</p>
+                                                    <p className="text-sm text-gray-700"><span className="font-medium">Delivery Date:</span> {new Date(selectedOrder.deliveryDate).toLocaleDateString()}</p>
+                                                    <p className="text-sm text-gray-700"><span className="font-medium">Order Status:</span> {selectedOrder.orderStatus}</p>
+                                                    <p className="text-sm text-gray-700"><span className="font-medium">Amount:</span> ${selectedOrder.amount.toFixed(2)}</p>
+                                                    
+                                                    <div>
+                                                        <p className="text-sm font-medium text-gray-700">Dresses:</p>
+                                                        <ul className="mt-2 list-disc pl-5 text-sm text-gray-700">
+                                                            {selectedOrder.dresses.map((dress, index) => (
+                                                                <li key={index}>{dress}</li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                    
+                                                    <div className="mt-6">
+                                                        <h3 className="text-sm font-medium text-gray-700 mb-3">Measurements:</h3>
+                                                        <div className="overflow-x-auto border rounded-lg">
+                                                            <table className="min-w-full divide-y divide-gray-200">
+                                                                <thead className="bg-gray-50">
+                                                                    <tr>
+                                                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chest</th>
+                                                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waist</th>
+                                                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Length</th>
+                                                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sleeve</th>
+                                                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Inseam</th>
+                                                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Collar</th>
+                                                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Shoulder</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody className="bg-white divide-y divide-gray-200">
+                                                                    {measurements.length > 0 ? (
                                                                         measurements.map((measure, index) => (
-                                                                            <Table.Row key={index}>
-                                                                                <Table.Cell>{measure.name}</Table.Cell>
-                                                                                <Table.Cell>{measure.chest}</Table.Cell>
-                                                                                <Table.Cell>{measure.waist}</Table.Cell>
-                                                                                <Table.Cell>{measure.length}</Table.Cell>
-                                                                                <Table.Cell>{measure.sleeve}</Table.Cell>
-                                                                                <Table.Cell>{measure.inseam}</Table.Cell>
-                                                                                <Table.Cell>{measure.collar}</Table.Cell>
-                                                                                <Table.Cell>{measure.shoulder}</Table.Cell>
-                                                                            </Table.Row>
+                                                                            <tr key={index} className="hover:bg-gray-50">
+                                                                                <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{measure.name}</td>
+                                                                                <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{measure.chest}</td>
+                                                                                <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{measure.waist}</td>
+                                                                                <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{measure.length}</td>
+                                                                                <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{measure.sleeve}</td>
+                                                                                <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{measure.inseam}</td>
+                                                                                <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{measure.collar}</td>
+                                                                                <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">{measure.shoulder}</td>
+                                                                            </tr>
                                                                         ))
                                                                     ) : (
-                                                                        <Table.Row>
-                                                                            <Table.Cell colSpan={8}>No measurements available.</Table.Cell>
-                                                                        </Table.Row>
+                                                                        <tr>
+                                                                            <td colSpan={8} className="px-3 py-2 text-center text-xs text-gray-500">No measurements available.</td>
+                                                                        </tr>
                                                                     )}
-                                                                </Table.Body>
-                                                            </Table.Root>
-                                                        </Box>
-                                                    )}
-                                                </DrawerBody>
-                                            </DrawerContent>
-                                        </DrawerRoot>
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                        <SegmentedControl
-                                            value={order.orderStatus}
-                                            items={[
-                                                { label: "Pending", value: "Pending" },
-                                                { label: "Accepted", value: "Accepted" },
-                                                { label: "Completed", value: "Completed" },
-                                                { label: "Cancel", value: "Cancel" }
-                                            ]}
-                                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleStatusChange(order._id, event.target.value)} 
-                                        />
-                                    </Table.Cell>
-                                </Table.Row>
-                            ))}
-                        </Table.Body>
-                    </Table.Root>
-                    {hasChanges && (
-                        <Box mt={4} display="flex" justifyContent="space-between">
-                            <Button colorScheme="red" onClick={cancelChanges}>Cancel</Button>
-                            <Button colorScheme="blue" onClick={saveChanges}>Save Changes</Button>
-                        </Box>
-                    )}
-                </Box>
-            </Card.Root>
-        </Center>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
     );
 };
 
