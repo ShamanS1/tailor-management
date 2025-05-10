@@ -1,6 +1,6 @@
-// src/MapCard.tsx
-import React, { useState } from 'react';
-import Map from '../map/Map';
+// MapCard.tsx
+import React, { useState, useEffect } from 'react';
+import Map from '../map/Map'
 
 interface MapCardProps {
   onLocationSelect: (lat: number, lng: number) => void;
@@ -11,18 +11,42 @@ const MapCard: React.FC<MapCardProps> = ({ onLocationSelect }) => {
 
   const handleLocationChange = (lat: number, lng: number) => {
     setLocation({ lat, lng });
-    onLocationSelect(lat, lng); // 🔁 Pass to parent
+    
+    // Make sure onLocationSelect exists and is a function before calling
+    if (typeof onLocationSelect === 'function') {
+      onLocationSelect(lat, lng);
+    } else {
+      console.error('onLocationSelect is not a function:', onLocationSelect);
+    }
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto p-4 shadow-lg rounded-lg bg-white transition-all duration-300 hover:shadow-xl">
-      <h3 className="text-center text-xl font-medium text-teal-700 mb-4">Our Location</h3>
-      <div className="w-full h-[300px] overflow-hidden rounded-lg border border-gray-200">
+    <div style={{ width: '100%' }}>
+      <h3 style={{ 
+        textAlign: 'center', 
+        fontSize: '1.25rem', 
+        fontWeight: 500, 
+        marginBottom: '16px' 
+      }}>
+        Select Your Location
+      </h3>
+      <div style={{ 
+        width: '100%', 
+        height: '300px', 
+        overflow: 'hidden', 
+        borderRadius: '8px',
+        border: '1px solid #ccc'
+      }}>
         <Map onLocationChange={handleLocationChange} />
       </div>
       {location && (
-        <p className="text-center mt-3 text-sm text-gray-600">
-          Current Location: {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
+        <p style={{ 
+          textAlign: 'center', 
+          marginTop: '10px', 
+          fontSize: '0.9rem', 
+          color: '#555' 
+        }}>
+          Selected Location: {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
         </p>
       )}
     </div>
