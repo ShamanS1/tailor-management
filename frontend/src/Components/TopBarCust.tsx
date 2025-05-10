@@ -47,7 +47,7 @@ const TopBarCust: React.FC = () => {
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo */}
         <h1 className="text-2xl md:text-3xl font-bold text-white font-serif tracking-wide">
-          TAILORNEST
+        SmartStitch
         </h1>
         
         {/* Navigation and User Profile */}

@@ -115,7 +115,7 @@ const LandingPage: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             className="text-5xl md:text-7xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 font-serif"
           >
-            Welcome to TailorNest
+            Welcome to SmartStitch
           </motion.h1>
           
           <motion.p 
@@ -218,7 +218,7 @@ const LandingPage: React.FC = () => {
             variants={fadeInUp}
             className="text-xl text-gray-700 mb-6 leading-relaxed"
           >
-            At TailorNest, we are passionate about connecting skilled artisans with those seeking personalized clothing
+            At SmartStitch, we are passionate about connecting skilled artisans with those seeking personalized clothing
             solutions. Our community values creativity, craftsmanship, and the unique stories woven into every piece.
           </motion.p>
           
