@@ -96,7 +96,7 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="mt-10 pt-6 border-t border-gray-600 text-center text-gray-400">
-          <p>&copy; {new Date().getFullYear()} TailorNest. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} SmartStitch. All rights reserved.</p>
         </div>
       </div>
     </footer>
