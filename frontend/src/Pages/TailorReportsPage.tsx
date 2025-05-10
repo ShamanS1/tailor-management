@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Container, Heading, SimpleGrid, Text } from '@chakra-ui/react';
-import { Bar, Pie } from 'react-chartjs-2';
+import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import axios from 'axios';
 import { useUserContext } from '../UserContext'; 
@@ -12,7 +11,7 @@ const TailorReportsPage: React.FC = () => {
   const [completedOrders, setCompletedOrders] = useState(0);
   const [failedOrders, setFailedOrders] = useState(0);
   const [pendingOrders, setPendingOrders] = useState(0);
-  const [totalRevenue, setTotalRevenue] = useState(0); // State for total revenue
+  const [totalRevenue, setTotalRevenue] = useState(0);
   const { user } = useUserContext();
 
   useEffect(() => {
@@ -24,21 +23,21 @@ const TailorReportsPage: React.FC = () => {
         let completed = 0;
         let failed = 0;
         let pending = 0;
-        let revenue = 0; // Initialize revenue
+        let revenue = 0;
 
         orders.forEach((order: any) => {
           if (order.orderStatus === 'Completed') completed++;
           else if (order.orderStatus === 'Cancelled') failed++;
           else pending++;
 
-          revenue += order.amount || 0; // Sum up the amount for each order
+          revenue += order.amount || 0;
         });
 
         setTotalOrders(orders.length);
         setCompletedOrders(completed);
         setFailedOrders(failed);
         setPendingOrders(pending);
-        setTotalRevenue(revenue); // Set the total revenue
+        setTotalRevenue(revenue);
       } catch (error) {
         console.error("Failed to fetch tailor orders", error);
       }
@@ -52,55 +51,128 @@ const TailorReportsPage: React.FC = () => {
     datasets: [
       {
         data: [completedOrders, failedOrders, pendingOrders],
-        backgroundColor: ['#4CAF50', '#FF5252', '#FFC107'],
-        hoverBackgroundColor: ['#45A049', '#FF4444', '#FFB300'],
+        backgroundColor: ['#10B981', '#EF4444', '#F59E0B'],
+        hoverBackgroundColor: ['#059669', '#DC2626', '#D97706'],
       },
     ],
   };
 
   return (
-    <Box bg="gray.50" minH="100vh">
-      <Container maxW="container.lg" mt={6} p={4}>
-        <Heading as="h1" size="2xl" mb={4} textAlign="center" color="teal.600">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold text-center text-emerald-700 mb-8 drop-shadow-sm">
           Tailor Reports Dashboard
-        </Heading>
+        </h1>
 
-        <SimpleGrid columns={{ base: 1, md: 4 }} spacing={4} mb={8}>
-          <Box bg="white" p={6} rounded="md" shadow="md" textAlign="center">
-            <Text fontSize="lg" fontWeight="bold" color="teal.500">Total Orders</Text>
-            <Text fontSize="2xl" fontWeight="bold" mt={2}>{totalOrders}</Text>
-          </Box>
-          <Box bg="white" p={6} rounded="md" shadow="md" textAlign="center">
-            <Text fontSize="lg" fontWeight="bold" color="teal.500">Completed Orders</Text>
-            <Text fontSize="2xl" fontWeight="bold" mt={2}>{completedOrders}</Text>
-          </Box>
-          <Box bg="white" p={6} rounded="md" shadow="md" textAlign="center">
-            <Text fontSize="lg" fontWeight="bold" color="teal.500">Failed Orders</Text>
-            <Text fontSize="2xl" fontWeight="bold" mt={2}>{failedOrders}</Text>
-          </Box>
-          <Box bg="white" p={6} rounded="md" shadow="md" textAlign="center">
-            <Text fontSize="lg" fontWeight="bold" color="teal.500">Pending Orders</Text>
-            <Text fontSize="2xl" fontWeight="bold" mt={2}>{pendingOrders}</Text>
-          </Box>
-        </SimpleGrid>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+            <div className="p-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-gray-700">Total Orders</h2>
+                <div className="p-2 bg-emerald-100 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
+              </div>
+              <p className="mt-4 text-3xl font-bold text-emerald-600">{totalOrders}</p>
+            </div>
+          </div>
 
-        <Box bg="white" p={6} rounded="md" shadow="md" mb={8}>
-          <Heading as="h2" size="lg" mb={4} color="teal.500">
-             Revenue Analysis
-          </Heading>
-          <Text fontSize="2xl" fontWeight="bold" color="teal.600">{totalRevenue.toFixed(2)}</Text>
-        </Box>
+          <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+            <div className="p-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-gray-700">Completed</h2>
+                <div className="p-2 bg-green-100 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              </div>
+              <p className="mt-4 text-3xl font-bold text-green-600">{completedOrders}</p>
+            </div>
+          </div>
 
-        <Box bg="white" p={6} rounded="md" shadow="md">
-          <Heading as="h2" size="lg" mb={4} color="teal.500">
-            Orders Distribution
-          </Heading>
-          <Box width="300px" height="300px" mx="auto">
-            <Pie data={pieData} />
-          </Box>
-        </Box>
-      </Container>
-    </Box>
+          <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+            <div className="p-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-gray-700">Failed</h2>
+                <div className="p-2 bg-red-100 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </div>
+              </div>
+              <p className="mt-4 text-3xl font-bold text-red-600">{failedOrders}</p>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+            <div className="p-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-gray-700">Pending</h2>
+                <div className="p-2 bg-amber-100 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+              <p className="mt-4 text-3xl font-bold text-amber-600">{pendingOrders}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Revenue Analysis */}
+        <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden mb-8">
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-emerald-700">Revenue Analysis</h2>
+              <div className="p-2 bg-emerald-100 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </div>
+            <div className="flex items-center">
+              <span className="text-3xl font-bold text-emerald-600">$</span>
+              <span className="text-4xl font-bold text-emerald-600 ml-1">{totalRevenue.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Orders Distribution */}
+        <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-emerald-700">Orders Distribution</h2>
+              <div className="p-2 bg-emerald-100 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                </svg>
+              </div>
+            </div>
+            <div className="w-64 h-64 mx-auto">
+              <Pie data={pieData} options={{ 
+                plugins: { 
+                  legend: { 
+                    position: 'bottom',
+                    labels: {
+                      usePointStyle: true,
+                      padding: 20,
+                      font: {
+                        size: 12
+                      }
+                    }
+                  } 
+                } 
+              }} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
