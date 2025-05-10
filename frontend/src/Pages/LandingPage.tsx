@@ -92,7 +92,7 @@ const LandingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-50 to-indigo-50 overflow-hidden">
       <TopBar />
-      <SearchBar />
+      {/* <SearchBar /> */}
 
       {/* Hero Section with Parallax Effect */}
       <div className="relative h-[80vh] flex items-center justify-center overflow-hidden">
