@@ -21,7 +21,7 @@ const SearchBar: React.FC = () => {
 
   return (
     <div className="m-4">
-      <motion.div 
+      {/* <motion.div 
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
@@ -48,7 +48,7 @@ const SearchBar: React.FC = () => {
         >
           <LuSearch className="h-5 w-5" />
         </motion.button>
-      </motion.div>
+      </motion.div> */}
     </div>
   );
 };
