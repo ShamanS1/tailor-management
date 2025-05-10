@@ -50,7 +50,7 @@ const TailorHome: React.FC = () => {
       
       <div className="container mx-auto px-4 py-6">
         {/* Mobile Sidebar Toggle */}
-        <button 
+        {/* <button 
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           className="mb-4 flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50"
         >
@@ -58,7 +58,7 @@ const TailorHome: React.FC = () => {
             <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
           </svg>
           Menu
-        </button>
+        </button> */}
 
         {/* Page Title */}
         <h1 className="text-4xl font-bold text-center text-teal-700 mb-6 drop-shadow-sm">
